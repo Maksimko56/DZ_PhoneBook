@@ -16,11 +16,10 @@ def open_book():
 # # Создать контакт
 def add_contact():
     global tem_book
-    ids = len(tem_book) + 1
     fio = input("Введите имя: ")
     number = input("Введите номер: ")
     comment = input("Введите комментарий: ")
-    tem_book.append(f"{ids},{fio},{number},{comment}\n")
+    tem_book.append(f"{fio},{number},{comment}\n")
     return True
 
 
@@ -37,7 +36,7 @@ def find_contact():
     if (what := input("Что будем искать?\n(Выбирите 1-фио, 2-номер, 3-комментарий)?: ")) == "1": # Поиск по имени
         fio = input("Введите имя: ").lower()
         for contact in tem_book:
-            if fio in contact.lower().split(",")[1]:
+            if fio in contact.lower().split(",")[0]:
                 count += 1
                 print(contact,end='')
         if count == 0:
@@ -47,7 +46,7 @@ def find_contact():
     elif what == "2": # Поиск по номеру
         number = input("Введите номер: ").lower()
         for contact in tem_book:
-            if number in contact.lower().split(",")[2]:
+            if number in contact.lower().split(",")[1]:
                 count += 1
                 print(contact,end='')
         if count == 0:
@@ -57,7 +56,7 @@ def find_contact():
     elif what == "3":   # Поиск по коментариям
         comment = input("Введите комментарий: ").lower()
         for contact in tem_book:
-            if comment in contact.lower().split(",")[3]:
+            if comment in contact.lower().split(",")[2]:
                 count += 1
                 print(contact, end='')
         if count == 0:
@@ -73,42 +72,42 @@ def edit_contact():
     count =0
     if (what := input("Что будем менять?\n(Выбирите 1-фио, 2-номер, 3-комментарий)?: ")) == "1":
         fio = input("Кого будем менять: ").lower()
-        for contact in tem_book:
-            if fio in contact.lower().split(",")[1]:
-                print(contact, end='')
+        for id,contact in enumerate(tem_book):
+            if fio in contact.lower().split(",")[0]:
+                print(id,contact, end='')
                 count+=1
         if count > 0:
             change_name_id = int(input('введите № id кого меняем?: '))
             new_name = input('Введите новое имя для контакта: ')
-            tem_book[change_name_id-1] = f"{change_name_id},{new_name},{tem_book[change_name_id-1].split(',')[2]},{tem_book[change_name_id-1].split(',')[3]}"
+            tem_book[change_name_id] = f"{new_name},{tem_book[change_name_id].split(',')[1]},{tem_book[change_name_id].split(',')[2]}"
             return True
         else:
             print("Такого нет")
             edit_contact()
     elif what == "2":
         number = input("Введите номер: ").lower()
-        for contact in tem_book:
-            if number in contact.lower().split(",")[2]:
-                print(contact, end='')
+        for id,contact in enumerate(tem_book):
+            if number in contact.lower().split(",")[1]:
+                print(id,contact, end='')
                 count +=1
         if count > 0:
             change_name_id = int(input('введите № id кого меняем?: '))
             new_number = input('Введите новый номер: ')
-            tem_book[change_name_id - 1] = f"{change_name_id},{tem_book[change_name_id - 1].split(',')[1]},{new_number},{tem_book[change_name_id - 1].split(',')[3]}"
+            tem_book[change_name_id] = f"{tem_book[change_name_id].split(',')[0]},{new_number},{tem_book[change_name_id].split(',')[2]}"
             return True
         else:
             print("Такого нет")
             edit_contact()
     elif what == "3":
         comment = input("Введите комментарий: ").lower()
-        for contact in tem_book:
-            if comment in contact.lower().split(",")[3]:
-                print(contact, end='')
+        for id, contact in enumerate(tem_book):
+            if comment in contact.lower().split(",")[2]:
+                print(id,contact, end='')
                 count += 1
         if count > 0:
             change_name_id = int(input('введите № id кого меняем?: '))
             new_coment = input('Введите новый коментарий: ')
-            tem_book[change_name_id - 1] = f"{change_name_id},{tem_book[change_name_id - 1].split(',')[1]},{tem_book[change_name_id - 1].split(',')[2]},{new_coment}\n"
+            tem_book[change_name_id] = f"{tem_book[change_name_id].split(',')[0]},{tem_book[change_name_id].split(',')[1]},{new_coment}\n"
             return True
         else:
             print("Такого нет")
@@ -120,28 +119,33 @@ def edit_contact():
 
 
 def del_contacts():
+    count =0
     tem_book = all_contacts()
     fio = input("Введите имя удаляемого контакта: ").lower()
-    for contact in tem_book:
-        if fio in contact.lower().split(",")[1]:
-                print(contact)
-    change_name_id = int(input('введите № id кого удаляемого?: '))
-    del tem_book[change_name_id-1]
-    return True
-
+    for id, contact in enumerate(tem_book):
+        if fio in contact.lower().split(",")[0]:
+                print(id,contact)
+                count += 1
+    if count > 0:
+            change_name_id = int(input('введите № id кого удаляемого?: '))
+            del tem_book[change_name_id]
+            return True
+    else:
+            print("Повторите выбор!")
+            del_contacts()
 
 
 def save_book():
     tem_book = all_contacts()
     file = open("phone_book.txt", "w", encoding="utf-8")
-    for count in range(len(tem_book)):
-        wr = f"{count + 1},{tem_book[count].split(',')[1]},{tem_book[count].split(',')[2]},{tem_book[count].split(',')[3]}"
+    for contact in tem_book:
+        wr = f"{contact.split(',')[0]},{contact.split(',')[1]},{contact.split(',')[2]}"
         file.write(str(wr))
     file.close()
 
 def phone_books():
     open_try = False
-    edit_try = ""
+    edit_try = ''
     global tem_book
 
     while True:
@@ -165,7 +169,7 @@ def phone_books():
                 print("Справочник не открыт!")
         elif numb == "3":
             if open_try:
-                print(all_contacts())
+                print(*all_contacts())
             else:
                 print("Справочник не открыт!")
         elif numb == "4":
