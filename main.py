@@ -15,7 +15,7 @@ def open_book():
 
 # # Создать контакт
 def add_contact():
-    global tem_book
+    tem_book = all_contacts()
     fio = input("Введите имя: ")
     number = input("Введите номер: ")
     comment = input("Введите комментарий: ")
@@ -124,7 +124,7 @@ def del_contacts():
     fio = input("Введите имя удаляемого контакта: ").lower()
     for id, contact in enumerate(tem_book):
         if fio in contact.lower().split(",")[0]:
-                print(id,contact)
+                print(id,contact, end='')
                 count += 1
     if count > 0:
             change_name_id = int(input('введите № id кого удаляемого?: '))
